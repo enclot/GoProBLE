@@ -32,7 +32,23 @@ public:
     bool shutterOn();
     bool shutterOff();
 
+    bool modePhoto();
+    bool modeVideo();
+    bool modeMultishot();
+
+    bool PowerOff();
+    bool PowerOffForce();
+
+    bool HiLightTag();
+    bool LocateOn();
+    bool LocateOff();
+
+    bool WifiOn();
+    bool WifiOff();
+
     uint8_t getBatteryPercentage();
+    uint8_t getFlatmode();
+
     bool isSystemHot();
 
     bool checkBatteryPercentageAsync();
@@ -40,6 +56,7 @@ public:
     bool checkSystemHotAsync();
     bool checkLowTempAlertAsync(); //notworking
     bool checkDateTimeAsync();
+    bool checkFlatModeAsync();
 
     bool enableStatusResponse();
 
@@ -47,6 +64,7 @@ private:
     uint8_t systemBusy = 1;
     uint8_t systemHot = 0;
     uint8_t batteryPercentage = 0;
+    uint8_t flatMode = 0;
 
     // uint8_t statusid = 1;
 

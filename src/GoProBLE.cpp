@@ -144,6 +144,11 @@ uint8_t GoProBLE::getBatteryPercentage()
     return batteryPercentage;
 }
 
+uint8_t GoProBLE::getFlatmode()
+{
+    return flatMode;
+}
+
 bool GoProBLE::enableStatusResponse()
 {
     if (pClient->isConnected())
@@ -240,6 +245,13 @@ bool GoProBLE::checkDateTimeAsync()
     return checkStatusAsync(cmdbusy, 2);
 }
 
+bool GoProBLE::checkFlatModeAsync()
+{
+
+    uint8_t cmdFlatmode[] = {0x02, 0x13, 0x59};
+    return checkStatusAsync(cmdFlatmode, 3);
+}
+
 void GoProBLE::scanEndedCB(NimBLEScanResults results)
 {
     Serial.println("Scan Ended.cpp static");
@@ -269,6 +281,10 @@ void GoProBLE::notifyedStatusCB(NimBLERemoteCharacteristic *pRemoteCharacteristi
     case 70:                          //5, 19, 0, 70, 1, 100 (response)
         batteryPercentage = pData[5]; //0-100
         break;
+    case 89:                 //5, 19, 0, 6, 1, 0 (response)
+        flatMode = pData[5]; //1:true, 0:false
+        break;
+
     case 6:                   //5, 19, 0, 6, 1, 0 (response)
         systemHot = pData[5]; //1:true, 0:false
         break;
@@ -328,6 +344,116 @@ bool GoProBLE::shutterOff()
     if (writeCommand(cmd, 4))
     {
         Serial.println("Wrote Shutter:Off");
+        return true;
+    }
+    return false;
+}
+
+bool GoProBLE::modeVideo()
+{
+    uint8_t cmd[] = {0x03, 0x02, 0x01, 0x00};
+    if (writeCommand(cmd, 4))
+    {
+        Serial.println("Wrote Mode:VIDEO");
+        return true;
+    }
+    return false;
+}
+
+bool GoProBLE::modePhoto()
+{
+    uint8_t cmd[] = {0x03, 0x02, 0x01, 0x01};
+    if (writeCommand(cmd, 4))
+    {
+        Serial.println("Wrote Mode:PHOTO");
+        return true;
+    }
+    return false;
+}
+
+bool GoProBLE::modeMultishot()
+{
+    uint8_t cmd[] = {0x03, 0x02, 0x01, 0x02};
+    if (writeCommand(cmd, 4))
+    {
+        Serial.println("Wrote Mode:MULTISHOT");
+        return true;
+    }
+    return false;
+}
+
+bool GoProBLE::PowerOff()
+{
+    uint8_t cmd[] = {0x01, 0x05};
+    if (writeCommand(cmd, 2))
+    {
+        Serial.println("Wrote Power:Off");
+        return true;
+    }
+    return false;
+}
+
+bool GoProBLE::PowerOffForce()
+{
+    uint8_t cmd[] = {0x01, 0x04};
+    if (writeCommand(cmd, 2))
+    {
+        Serial.println("Wrote PowerOffForce:Off");
+        return true;
+    }
+    return false;
+}
+
+bool GoProBLE::HiLightTag()
+{
+    uint8_t cmd[] = {0x01, 0x18};
+    if (writeCommand(cmd, 2))
+    {
+        Serial.println("Wrote HiLight");
+        return true;
+    }
+    return false;
+}
+
+bool GoProBLE::LocateOn()
+{
+    uint8_t cmd[] = {0x03, 0x16, 0x01, 0x01};
+    if (writeCommand(cmd, 4))
+    {
+        Serial.println("Wrote Locate:ON");
+        return true;
+    }
+    return false;
+}
+
+bool GoProBLE::LocateOff()
+{
+    uint8_t cmd[] = {0x03, 0x16, 0x01, 0x00};
+    if (writeCommand(cmd, 4))
+    {
+        Serial.println("Wrote Locate:OFF");
+        return true;
+    }
+    return false;
+}
+
+bool GoProBLE::WifiOn()
+{
+    uint8_t cmd[] = {0x03, 0x17, 0x01, 0x01};
+    if (writeCommand(cmd, 4))
+    {
+        Serial.println("Wrote Wifi:ON");
+        return true;
+    }
+    return false;
+}
+
+bool GoProBLE::WifiOff()
+{
+    uint8_t cmd[] = {0x03, 0x17, 0x01, 0x00};
+    if (writeCommand(cmd, 4))
+    {
+        Serial.println("Wrote Wifi:OFF");
         return true;
     }
     return false;
