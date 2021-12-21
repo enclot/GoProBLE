@@ -16,14 +16,13 @@ public:
 
     GoProBLE();
 
-    void begin();
+    // void begin();
 
     //void scanAsync(const uint32_t scanTime, GoProBLE::GoproFoundCB callback);
-    void scanAsync(const uint32_t scanTime);
+    void scanAsync(const uint32_t scanDuration);
 
     bool connect();
-
-    void disconnect();
+    void disconnect(); //not working
 
     bool isFound();
     bool isConnected();
@@ -38,7 +37,7 @@ public:
     bool checkBatteryPercentageAsync();
     bool checkSystemBusyAsync();
     bool checkSystemHotAsync();
-    bool checkLowTempAlertAsync(); //notworking
+    bool checkLowTempAlertAsync(); //not working
     bool checkDateTimeAsync();
 
     bool enableStatusResponse();

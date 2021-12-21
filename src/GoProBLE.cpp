@@ -7,11 +7,13 @@ GoProBLE::GoProBLE()
 {
 }
 
-void GoProBLE::begin()
-{
-}
+// void GoProBLE::begin()
+// {
+// }
 
-void GoProBLE::scanAsync(const uint32_t scanTime)
+//BLE scan
+//
+void GoProBLE::scanAsync(const uint32_t scanDuration)
 {
     NimBLEDevice::init("");
 
@@ -24,13 +26,13 @@ void GoProBLE::scanAsync(const uint32_t scanTime)
     {
         void onResult(NimBLEAdvertisedDevice *advertisedDevice)
         {
-            Serial.print("Advertised Device found: ");
-            Serial.println(advertisedDevice->toString().c_str());
+            //Serial.print("Advertised Device found: ");
+            //Serial.println(advertisedDevice->toString().c_str());
 
             if (advertisedDevice->getName().find("GoPro") == 0)
             {
                 advertisedGopro = advertisedDevice;
-                Serial.println("Stop Scan");
+                Serial.println("Stop BLE Scan");
                 NimBLEDevice::getScan()->stop();
             }
         };
@@ -45,7 +47,9 @@ void GoProBLE::scanAsync(const uint32_t scanTime)
 
     // auto cb = std::bind(&GoProBLE::nonStaticCB, this, std::placeholders::_1);
     //TODO
-    pScan->start(scanTime, scanEndedCB);
+    //staticでないCallbackでできるようにしたい
+
+    pScan->start(scanDuration, scanEndedCB);
 }
 
 bool GoProBLE::connect()
@@ -59,7 +63,7 @@ bool GoProBLE::connect()
         }
 
         pClient = NimBLEDevice::createClient();
-        Serial.println("New client created");
+        Serial.println("New BLE client created");
 
         // TODO
         // pClient->setClientCallbacks(&clientCB, false);
@@ -107,10 +111,21 @@ bool GoProBLE::connect()
     return true;
 }
 
-void GoProBLE::disconnect()
+//scan finished
+//static method
+void GoProBLE::scanEndedCB(NimBLEScanResults results)
 {
+
+    Serial.println("Scan Ended (.cpp) static method");
 }
 
+void GoProBLE::disconnect()
+{
+    //TODO
+    //切断処理を実装したい
+}
+
+// Advertising Packet is Found
 bool GoProBLE::isFound()
 {
     if (advertisedGopro != nullptr)
@@ -238,14 +253,6 @@ bool GoProBLE::checkDateTimeAsync()
 {
     uint8_t cmdbusy[] = {0x01, 0x13};
     return checkStatusAsync(cmdbusy, 2);
-}
-
-void GoProBLE::scanEndedCB(NimBLEScanResults results)
-{
-    Serial.println("Scan Ended.cpp static");
-
-    //TODO
-    //Callback
 }
 
 // void GoProBLE::nonStaticCB(NimBLEScanResults results)
