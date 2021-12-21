@@ -40,7 +40,7 @@ public:
     bool checkLowTempAlertAsync(); //not working
     bool checkDateTimeAsync();
 
-    bool enableStatusResponse();
+    bool enableQueryResponse();
 
 private:
     bool secureConnection = false;
@@ -51,7 +51,7 @@ private:
     // uint8_t statusid = 1;
 
     bool writeCommand(uint8_t *cmd, size_t len);
-    bool checkStatusAsync(uint8_t *cmd, size_t len);
+    bool checkQueryAsync(uint8_t *cmd, size_t len);
 
     static NimBLEAdvertisedDevice *advertisedGopro;
     static void scanEndedCB(NimBLEScanResults results);

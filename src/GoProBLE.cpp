@@ -76,8 +76,6 @@ bool GoProBLE::connect()
             Serial.println("Failed to connect, deleted client");
             return false;
         }
-
-        // Serial.println(pClient->getMTU());
     }
     else
     {
@@ -102,7 +100,7 @@ bool GoProBLE::connect()
     }
     secureConnection = pClient->secureConnection();
 
-    Serial.print(b);
+    Serial.print(secureConnection);
     Serial.print(" Connected to: ");
     Serial.println(pClient->getPeerAddress().toString().c_str());
     Serial.print("RSSI: ");
@@ -160,7 +158,7 @@ uint8_t GoProBLE::getBatteryPercentage()
 }
 
 //subscribe query response
-bool GoProBLE::enableStatusResponse()
+bool GoProBLE::enableQueryResponse()
 {
     if (!secureConnection)
     {
@@ -199,7 +197,7 @@ bool GoProBLE::enableStatusResponse()
 }
 
 //QUERY
-bool GoProBLE::checkStatusAsync(uint8_t *cmd, size_t len)
+bool GoProBLE::checkQueryAsync(uint8_t *cmd, size_t len)
 {
     if (pClient->isConnected())
     {
@@ -231,7 +229,7 @@ bool GoProBLE::checkSystemHotAsync()
 {
 
     uint8_t cmdHot[] = {0x02, 0x13, 0x06};
-    return checkStatusAsync(cmdHot, 3);
+    return checkQueryAsync(cmdHot, 3);
 }
 
 bool GoProBLE::checkLowTempAlertAsync()
@@ -241,27 +239,27 @@ bool GoProBLE::checkLowTempAlertAsync()
     // uint8_t cmdCold[] = {0x02, 0x13, statusid};
     // statusid++;
     // Serial.println(statusid);
-    // return checkStatusAsync(cmdCold, 3);
+    // return checkQueryAsync(cmdCold, 3);
 }
 
 bool GoProBLE::checkBatteryPercentageAsync()
 {
 
     uint8_t cmdCold[] = {0x02, 0x13, 0x46};
-    return checkStatusAsync(cmdCold, 3);
+    return checkQueryAsync(cmdCold, 3);
 }
 
 bool GoProBLE::checkSystemBusyAsync()
 {
     Serial.println("check system busy");
     uint8_t cmdbusy[] = {0x02, 0x13, 0x08};
-    return checkStatusAsync(cmdbusy, 3);
+    return checkQueryAsync(cmdbusy, 3);
 }
 
 bool GoProBLE::checkDateTimeAsync()
 {
     uint8_t cmdbusy[] = {0x01, 0x13};
-    return checkStatusAsync(cmdbusy, 2);
+    return checkQueryAsync(cmdbusy, 2);
 }
 
 // void GoProBLE::nonStaticCB(NimBLEScanResults results)
