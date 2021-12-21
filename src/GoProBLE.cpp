@@ -100,15 +100,15 @@ bool GoProBLE::connect()
             }
         }
     }
+    secureConnection = pClient->secureConnection();
 
-    Serial.print("Connected to: ");
+    Serial.print(b);
+    Serial.print(" Connected to: ");
     Serial.println(pClient->getPeerAddress().toString().c_str());
     Serial.print("RSSI: ");
     Serial.println(pClient->getRssi());
 
-    pClient->secureConnection();
-
-    return true;
+    return secureConnection;
 }
 
 //scan finished
@@ -159,13 +159,20 @@ uint8_t GoProBLE::getBatteryPercentage()
     return batteryPercentage;
 }
 
+//subscribe query response
 bool GoProBLE::enableStatusResponse()
 {
+    if (!secureConnection)
+    {
+        return false;
+    }
+
     if (pClient->isConnected())
     {
         NimBLERemoteService *pService = pClient->getService("fea6");
         if (pService != nullptr)
         {
+            //GP-0077	Query Response	Notify
             NimBLERemoteCharacteristic *pChrNotify = pService->getCharacteristic(NimBLEUUID("b5f90077-aa8d-11e3-9046-0002a5d5c51b"));
 
             if (pChrNotify->canNotify())
@@ -188,9 +195,10 @@ bool GoProBLE::enableStatusResponse()
         }
     }
 
-    return false;
+    return true;
 }
 
+//QUERY
 bool GoProBLE::checkStatusAsync(uint8_t *cmd, size_t len)
 {
     if (pClient->isConnected())
@@ -198,6 +206,7 @@ bool GoProBLE::checkStatusAsync(uint8_t *cmd, size_t len)
         NimBLERemoteService *pService = pClient->getService("fea6");
         if (pService != nullptr)
         {
+            //GP-0076	Query	Write
             NimBLERemoteCharacteristic *pCharacteristic = pService->getCharacteristic(NimBLEUUID("b5f90076-aa8d-11e3-9046-0002a5d5c51b"));
             //      Serial.println(pCharacteristic->getUUID().toString().c_str());
 
@@ -215,7 +224,7 @@ bool GoProBLE::checkStatusAsync(uint8_t *cmd, size_t len)
         }
     }
 
-    return false;
+    return true;
 }
 
 bool GoProBLE::checkSystemHotAsync()
@@ -297,9 +306,7 @@ bool GoProBLE::writeCommand(uint8_t *cmd, size_t len)
         NimBLERemoteService *pService = pClient->getService("fea6");
         if (pService != nullptr)
         {
-            // Serial.println(pService->getUUID().to128().toString().c_str());
             NimBLERemoteCharacteristic *pCharacteristic = pService->getCharacteristic(NimBLEUUID("b5f90072-aa8d-11e3-9046-0002a5d5c51b"));
-            // Serial.println(pCharacteristic->getUUID().toString().c_str());
 
             if (pCharacteristic != nullptr)
             {

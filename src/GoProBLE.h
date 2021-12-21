@@ -43,6 +43,7 @@ public:
     bool enableStatusResponse();
 
 private:
+    bool secureConnection = false;
     uint8_t systemBusy = 1;
     uint8_t systemHot = 0;
     uint8_t batteryPercentage = 0;
