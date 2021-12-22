@@ -48,7 +48,7 @@ void GoProBLE::scanAsync(const char *name, const uint32_t scanDuration)
 
     pScan->setActiveScan(true);
 
-    // auto cb = std::bind(&GoProBLE::nonStaticCB, this, std::placeholders::_1);
+    //auto cb = std::bind(&GoProBLE::nonStaticCB, this, std::placeholders::_1);
     //TODO
     //staticでないCallbackでできるようにしたい
 
@@ -69,10 +69,10 @@ void GoProBLE::scanEndedCB(NimBLEScanResults results)
 
     Serial.println("Scan Ended (.cpp) static method");
 }
-// void GoProBLE::nonStaticCB(NimBLEScanResults results)
-// {
-//     Serial.println("Scan Ended.cpp non static");
-// }
+void GoProBLE::nonStaticCB(NimBLEScanResults results)
+{
+    Serial.println("Scan Ended.cpp non static");
+}
 
 bool GoProBLE::connect()
 {
@@ -111,8 +111,6 @@ bool GoProBLE::connect()
             return false;
         }
 
-        //TODO
-        //接続後のコールバックを実装したい
         pClient = NimBLEDevice::createClient();
         Serial.println("New BLE client created");
 
@@ -202,12 +200,6 @@ uint8_t GoProBLE::getBatteryPercentage()
 //subscribe query response
 bool GoProBLE::enableQueryResponse()
 {
-    if (!secureConnection)
-    {
-        Serial.println("Not secure connection");
-        return false;
-    }
-
     if (pClient->isConnected())
     {
         NimBLERemoteService *pService = pClient->getService("fea6");
@@ -218,16 +210,16 @@ bool GoProBLE::enableQueryResponse()
 
             if (pChrNotify->canNotify())
             {
-                Serial.println("enable notify");
+                Serial.println("enable query notify");
 
-                auto cb = std::bind(&GoProBLE::notifyedStatusCB, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4);
-
+                auto cb = std::bind(&GoProBLE::notifyedQueryCB, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4);
                 if (!pChrNotify->subscribe(true, cb))
                 {
                     /** Disconnect if subscribe failed */
                     pClient->disconnect();
                     return false;
                 }
+                return true;
             }
         }
         else
@@ -236,12 +228,18 @@ bool GoProBLE::enableQueryResponse()
         }
     }
 
-    return true;
+    return false;
 }
 
 //QUERY
 bool GoProBLE::checkQueryAsync(uint8_t *cmd, size_t len)
 {
+    if (!secureConnection)
+    {
+        Serial.println("Not secure connection");
+        return false;
+    }
+
     if (pClient->isConnected())
     {
         NimBLERemoteService *pService = pClient->getService("fea6");
@@ -265,7 +263,7 @@ bool GoProBLE::checkQueryAsync(uint8_t *cmd, size_t len)
         }
     }
 
-    return true;
+    return false;
 }
 
 bool GoProBLE::checkSystemHotAsync()
@@ -287,14 +285,13 @@ bool GoProBLE::checkLowTempAlertAsync()
 
 bool GoProBLE::checkBatteryPercentageAsync()
 {
-
     uint8_t cmdCold[] = {0x02, 0x13, 0x46};
     return checkQueryAsync(cmdCold, 3);
 }
 
 bool GoProBLE::checkSystemBusyAsync()
 {
-    Serial.println("check system busy");
+    // Serial.println("check system busy");
     uint8_t cmdbusy[] = {0x02, 0x13, 0x08};
     return checkQueryAsync(cmdbusy, 3);
 }
@@ -305,11 +302,12 @@ bool GoProBLE::checkDateTimeAsync()
     return checkQueryAsync(cmdbusy, 2);
 }
 
-void GoProBLE::notifyedStatusCB(NimBLERemoteCharacteristic *pRemoteCharacteristic, uint8_t *pData,
-                                size_t length, bool isNotify)
+void GoProBLE::notifyedQueryCB(NimBLERemoteCharacteristic *pRemoteCharacteristic, uint8_t *pData,
+                               size_t length, bool isNotify)
 {
-    Serial.print("notify status callback    ");
-    Serial.println(length);
+    Serial.print("query resoponse received: ");
+    Serial.print(length);
+    Serial.println(" byte");
 
     uint8_t statusID = pData[3];
 
@@ -326,12 +324,12 @@ void GoProBLE::notifyedStatusCB(NimBLERemoteCharacteristic *pRemoteCharacteristi
         break;
     }
 
-    for (int i = 0; i < length; i++)
-    {
-        Serial.print(pData[i]);
-        Serial.print(", ");
-    }
-    Serial.println();
+    // for (int i = 0; i < length; i++)
+    // {
+    //     Serial.print(pData[i]);
+    //     Serial.print(", ");
+    // }
+    // Serial.println();
 }
 
 bool GoProBLE::writeCommand(uint8_t *cmd, size_t len)

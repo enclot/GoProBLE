@@ -9,10 +9,6 @@ class GoProBLE
 
 public:
     typedef void (*GoproFoundCB)(NimBLEScanResults);
-    //typedef std::function<void(NimBLEScanResults)> GoproFoundCB;
-    //using GoproFoundCB = std::function<void(NimBLEScanResults results)>;
-
-    // typedef std::function<void(NimBLEScanResults)> GoproFoundCB;
 
     GoProBLE();
 
@@ -46,20 +42,17 @@ private:
     uint8_t systemHot = 0;
     uint8_t batteryPercentage = 0;
 
-    // uint8_t statusid = 1;
-
     bool writeCommand(uint8_t *cmd, size_t len);
     bool checkQueryAsync(uint8_t *cmd, size_t len);
 
     static NimBLEAdvertisedDevice *advertisedGopro;
     static void scanEndedCB(NimBLEScanResults results);
 
-    // void nonStaticCB(NimBLEScanResults results);
+    void nonStaticCB(NimBLEScanResults results);
 
     static NimBLEClient *pClient;
-    // static ClientCallbacks clientCB;
 
-    void notifyedStatusCB(NimBLERemoteCharacteristic *pRemoteCharacteristic, uint8_t *pData, size_t length, bool isNotify);
+    void notifyedQueryCB(NimBLERemoteCharacteristic *pRemoteCharacteristic, uint8_t *pData, size_t length, bool isNotify);
 };
 
 #endif
