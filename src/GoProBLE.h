@@ -16,9 +16,7 @@ public:
 
     GoProBLE();
 
-    // void begin();
-
-    //void scanAsync(const uint32_t scanTime, GoProBLE::GoproFoundCB callback);
+    void scanAsync(const char *name, const uint32_t scanDuration);
     void scanAsync(const uint32_t scanDuration);
 
     bool connect();
