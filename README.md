@@ -19,6 +19,7 @@ You can probably connect to other Arduino with BLE function.
 ## Change Log
 
 * enableStatusResponse() has changed its name to enableQueryResponse(). 
+* scanAsync() can specify a gopro ble name.
 
 
 
