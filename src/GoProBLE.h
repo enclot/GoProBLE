@@ -25,6 +25,8 @@ public:
     bool shutterOn();
     bool shutterOff();
 
+    bool sleep();
+
     uint8_t getBatteryPercentage();
     bool isSystemHot();
 

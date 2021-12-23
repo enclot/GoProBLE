@@ -269,37 +269,31 @@ bool GoProBLE::checkQueryAsync(uint8_t *cmd, size_t len)
 bool GoProBLE::checkSystemHotAsync()
 {
 
-    uint8_t cmdHot[] = {0x02, 0x13, 0x06};
-    return checkQueryAsync(cmdHot, 3);
+    uint8_t cmd[] = {0x02, 0x13, 0x06};
+    return checkQueryAsync(cmd, 3);
 }
 
 bool GoProBLE::checkLowTempAlertAsync()
 {
-    //
-
-    // uint8_t cmdCold[] = {0x02, 0x13, statusid};
-    // statusid++;
-    // Serial.println(statusid);
-    // return checkQueryAsync(cmdCold, 3);
 }
 
 bool GoProBLE::checkBatteryPercentageAsync()
 {
-    uint8_t cmdCold[] = {0x02, 0x13, 0x46};
-    return checkQueryAsync(cmdCold, 3);
+    uint8_t cmd[] = {0x02, 0x13, 0x46};
+    return checkQueryAsync(cmd, 3);
 }
 
 bool GoProBLE::checkSystemBusyAsync()
 {
     // Serial.println("check system busy");
-    uint8_t cmdbusy[] = {0x02, 0x13, 0x08};
-    return checkQueryAsync(cmdbusy, 3);
+    uint8_t cmd[] = {0x02, 0x13, 0x08};
+    return checkQueryAsync(cmd, 3);
 }
 
 bool GoProBLE::checkDateTimeAsync()
 {
-    uint8_t cmdbusy[] = {0x01, 0x13};
-    return checkQueryAsync(cmdbusy, 2);
+    uint8_t cmd[] = {0x02, 0x13, 0x28}; //28
+    return checkQueryAsync(cmd, 3);
 }
 
 void GoProBLE::notifyedQueryCB(NimBLERemoteCharacteristic *pRemoteCharacteristic, uint8_t *pData,
@@ -322,14 +316,16 @@ void GoProBLE::notifyedQueryCB(NimBLERemoteCharacteristic *pRemoteCharacteristic
     case 6:                   //5, 19, 0, 6, 1, 0 (response)
         systemHot = pData[5]; //1:true, 0:false
         break;
+    case 40:
+        break;
     }
 
-    // for (int i = 0; i < length; i++)
-    // {
-    //     Serial.print(pData[i]);
-    //     Serial.print(", ");
-    // }
-    // Serial.println();
+    for (int i = 0; i < length; i++)
+    {
+        Serial.print(pData[i]);
+        Serial.print(", ");
+    }
+    Serial.println();
 }
 
 bool GoProBLE::writeCommand(uint8_t *cmd, size_t len)
@@ -376,6 +372,17 @@ bool GoProBLE::shutterOff()
     if (writeCommand(cmd, 4))
     {
         Serial.println("Wrote Shutter:Off");
+        return true;
+    }
+    return false;
+}
+
+bool GoProBLE::sleep()
+{
+    uint8_t cmd[] = {0x01, 0x05};
+    if (writeCommand(cmd, 2))
+    {
+        Serial.println("Sleep");
         return true;
     }
     return false;
