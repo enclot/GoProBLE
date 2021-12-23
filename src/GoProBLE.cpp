@@ -146,6 +146,7 @@ bool GoProBLE::connect()
             }
         }
     }
+
     secureConnection = pClient->secureConnection();
 
     Serial.print(secureConnection);

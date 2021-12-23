@@ -3,16 +3,24 @@
 
 
 This is a library for connecting GoPro and Arduino BLE.
-It has been tested with GoPro Hero6 and M5StickC.
 
 You can probably connect to other Arduino with BLE function.
 
 
 
-GoProとArduinoをBLEで接続するためのライブラリです。
-GoPro Hero6とM5StickCで確認しています。
+| Arduino    |      | GoPro       |      |
+| ---------- | ---- | ----------- | ---- |
+| M5StickC   | x    | Hero6 Black | x    |
+| M5AtomLite | x    | Hero9       | x    |
+|            |      |             |      |
 
-ほかのBLE機能のあるArduinoでも多分接続できます。
+
+
+## Change Log
+
+* enableStatusResponse() has changed its name to enableQueryResponse(). 
+
+
 
 
 
@@ -22,6 +30,7 @@ GoPro Hero6とM5StickCで確認しています。
 | ------------------ | -------------------------------- |
 | Set shutter        | Shutter: on                      |
 | Set shutter        | Shutter: off                     |
+| Sleep              | Put camera to sleep              |
 | System busy        | Is the camera busy?              |
 | battery percentage | Internal battery level (percent) |
 |                    |                                  |
@@ -36,9 +45,10 @@ In order to pair it with GoPro, you have to put it in the pairing waiting state 
 
 1. Put the GoPro in the same state as when connecting the app, waiting for pairing.
 2. Connect from Arduino
-   * Nothing is displayed on the GoPro, so please check the connection with the Arduino console.
-
-
+   * Hero6
+     * Nothing is displayed on the GoPro, so please check the connection with the Arduino console.
+   * Hero9
+     * Once paired, the camera should beep and display “Connection Successful”.
 
 
 
@@ -46,7 +56,7 @@ GoProとペアリングするためにGoPro側の操作でペアリング待ち�
 
 1. GoProをアプリを接続するときと同様にペアリング待ち状態にする
 2. Arduinoから接続する
-    * GoPro側では特に何も表示されないので、Arduinoのコンソールなどで接続の確認をしてください
+    * Hero6ではGoPro側では特に何も表示されないので、Arduinoのコンソールなどで接続の確認をしてください
 
 
 
